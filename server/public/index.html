@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>小学数学教学助手</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 登录页 -->
+<div id="loginView" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">数</div>
+    <h1>小学数学教学助手</h1>
+    <p class="login-sub">班级积分管理 · 大屏消息推送</p>
+    <form id="loginForm">
+      <label>账号</label>
+      <input id="loginUser" type="text" value="teacher" autocomplete="username" placeholder="教师账号">
+      <label>密码</label>
+      <input id="loginPass" type="password" autocomplete="current-password" placeholder="初始密码 123456">
+      <button type="submit" class="btn btn-primary btn-block">登 录</button>
+      <p id="loginError" class="error-text" hidden></p>
+    </form>
+  </div>
+</div>
+
+<!-- 主应用 -->
+<div id="appView" hidden>
+  <header class="app-header">
+    <div class="header-left">
+      <span class="logo-mini">数</span>
+      <span class="app-title">教学助手</span>
+    </div>
+    <div class="header-right">
+      <select id="periodSel" class="period-select" title="当前计分周期"></select>
+      <button id="logoutBtn" class="btn btn-ghost btn-sm">退出</button>
+    </div>
+  </header>
+
+  <nav class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-tab="score">打分</button>
+    <button class="tab-btn" data-tab="students">学生</button>
+    <button class="tab-btn" data-tab="items">项目</button>
+    <button class="tab-btn" data-tab="periods">周期</button>
+    <button class="tab-btn" data-tab="query">查询导出</button>
+    <button class="tab-btn" data-tab="message">发消息</button>
+    <button class="tab-btn" data-tab="settings">设置</button>
+  </nav>
+
+  <main class="app-main">
+    <!-- 打分 -->
+    <section id="tab-score" class="tab-panel active">
+      <div class="card">
+        <div class="row-flex">
+          <select id="scoreClassSel" class="select"></select>
+          <button id="scoreSelectAll" class="btn btn-light btn-sm">全选</button>
+          <button id="scoreClearSel" class="btn btn-light btn-sm">清空</button>
+        </div>
+        <div id="scoreStuTip" class="muted-tip">请先在「学生」页导入或添加学生</div>
+        <div id="studentGrid" class="student-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">选择项目</div>
+        <div id="itemChips" class="chip-row"></div>
+        <div class="row-flex score-input-row">
+          <label class="score-label">分值</label>
+          <input id="scoreInput" type="number" step="any" placeholder="如 2 或 -1">
+          <button id="scoreSubmit" class="btn btn-primary">确认打分</button>
+        </div>
+        <div class="muted-tip">已选 <b id="selCount">0</b> 名学生；选择项目后自动填充分值，可手动修改（减分为负数）</div>
+      </div>
+    </section>
+
+    <!-- 学生 -->
+    <section id="tab-students" class="tab-panel">
+      <div class="card">
+        <div class="row-flex">
+          <select id="stuClassSel" class="select"></select>
+        </div>
+        <div class="row-flex manage-class-row">
+          <button id="addClassBtn" class="btn btn-light btn-sm">＋班级</button>
+          <button id="renameClassBtn" class="btn btn-light btn-sm">重命名班级</button>
+          <button id="delClassBtn" class="btn btn-light btn-sm danger-text">删除班级</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">学生名单</div>
+        <div class="row-flex add-stu-row">
+          <input id="stuNameInput" type="text" placeholder="姓名">
+          <input id="stuNoInput" type="text" placeholder="学号(选填)">
+          <button id="addStuBtn" class="btn btn-primary btn-sm">添加</button>
+        </div>
+        <div class="row-flex import-row">
+          <label class="btn btn-light btn-sm file-label" for="importFile">导入Excel名单</label>
+          <input id="importFile" type="file" accept=".xlsx,.xls" hidden>
+          <a class="btn btn-light btn-sm" href="#" id="tplLink">下载模板</a>
+        </div>
+        <div id="importStatus" class="muted-tip" hidden></div>
+        <div id="studentList" class="list"></div>
+      </div>
+    </section>
+
+    <!-- 项目 -->
+    <section id="tab-items" class="tab-panel">
+      <div class="card">
+        <div class="card-title">加分 / 减分项目</div>
+        <div class="row-flex add-item-row">
+          <input id="itemNameInput" type="text" placeholder="项目名称，如：课堂发言">
+          <select id="itemTypeSel" class="select select-sm">
+            <option value="add">加分</option>
+            <option value="sub">减分</option>
+          </select>
+          <input id="itemScoreInput" type="number" step="any" min="1" placeholder="默认分值">
+          <button id="addItemBtn" class="btn btn-primary btn-sm">添加</button>
+        </div>
+        <div id="itemList" class="list"></div>
+        <div class="muted-tip">打分时可临时修改分数，不必使用默认分值；停用的项目不再出现在打分页</div>
+      </div>
+    </section>
+
+    <!-- 周期 -->
+    <section id="tab-periods" class="tab-panel">
+      <div class="card">
+        <div class="card-title">计分周期</div>
+        <div class="row-flex add-period-row">
+          <input id="periodNameInput" type="text" placeholder="周期名称，如：9月 / 第一学期">
+          <button id="addPeriodBtn" class="btn btn-primary btn-sm">添加</button>
+        </div>
+        <div id="periodList" class="list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">重置当前周期统计</div>
+        <div class="row-flex">
+          <select id="resetPeriodSel" class="select"></select>
+          <select id="resetClassSel" class="select">
+            <option value="">全部班级</option>
+          </select>
+          <button id="resetBtn" class="btn btn-danger">重置</button>
+        </div>
+        <div class="muted-tip">重置只清空所选周期的当前统计分数（开始新一轮计分），<b>所有打分历史永久保留</b>，可在「查询导出」中追溯</div>
+        <div id="resetHistory" class="sub-list"></div>
+      </div>
+    </section>
+
+    <!-- 查询导出 -->
+    <section id="tab-query" class="tab-panel">
+      <div class="card">
+        <div class="row-flex">
+          <select id="queryClassSel" class="select"></select>
+          <button id="queryBtn" class="btn btn-primary">查询</button>
+          <button id="exportBtn" class="btn btn-light">导出Excel</button>
+        </div>
+        <div class="card-title sub-title">计分周期（可多选，自动累计合并）</div>
+        <div id="queryPeriodChips" class="chip-row"></div>
+      </div>
+      <div class="card">
+        <div id="queryResult" class="query-empty muted-tip">选择班级与周期后点击「查询」</div>
+      </div>
+    </section>
+
+    <!-- 发消息 -->
+    <section id="tab-message" class="tab-panel">
+      <div class="card">
+        <div class="card-title">发送到教室大屏</div>
+        <textarea id="msgInput" rows="4" placeholder="输入要显示在教室大屏上的文字，支持换行"></textarea>
+        <button id="msgSendBtn" class="btn btn-primary btn-block">发 送</button>
+        <div id="receiptBanner" class="receipt-banner" hidden></div>
+        <div class="conn-tip muted-tip" id="clientStatus"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">发送记录</div>
+        <div id="msgHistory" class="list"></div>
+      </div>
+    </section>
+
+    <!-- 设置 -->
+    <section id="tab-settings" class="tab-panel">
+      <div class="card">
+        <div class="card-title">修改密码</div>
+        <div class="form-col">
+          <label>原密码</label>
+          <input id="oldPassInput" type="password">
+          <label>新密码（至少4位）</label>
+          <input id="newPassInput" type="password">
+          <button id="changePassBtn" class="btn btn-primary">保存新密码</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">数据备份与恢复</div>
+        <div class="row-flex backup-row">
+          <button id="backupBtn" class="btn btn-light">下载备份文件</button>
+          <label class="btn btn-light file-label" for="restoreFile">上传备份恢复</label>
+          <input id="restoreFile" type="file" accept=".json" hidden>
+        </div>
+        <div class="muted-tip">云端部署时请<b>每周至少下载一次备份</b>保存到手机或电脑；服务器重启或重新部署后数据可能被清空，用「上传备份恢复」即可完整还原（含全部积分历史与消息记录）</div>
+      </div>
+      <div class="card">
+        <div class="card-title">教室客户端接入</div>
+        <div class="muted-tip">教室电脑客户端登录时填写服务器地址：</div>
+        <div class="server-url" id="serverUrlShow"></div>
+        <div class="muted-tip">手机与教室电脑无需同一局域网，能访问以上地址即可</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- 弹窗 -->
+<div id="modalMask" class="modal-mask" hidden>
+  <div class="modal-card" id="modalCard"></div>
+</div>
+
+<!-- 提示 -->
+<div id="toast" class="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

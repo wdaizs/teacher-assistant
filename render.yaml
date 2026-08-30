@@ -1,0 +1,19 @@
+# Render.com 部署配置（Blueprint）
+# 用法：将 render.yaml + server/ 推到 GitHub 后，在 Render 控制台
+#       New -> Blueprint -> 选中仓库 -> Apply，然后在环境变量里填入 Turso 的两个值
+services:
+  - type: web
+    name: teacher-assistant        # 服务名，可自定义（决定访问域名前缀）
+    runtime: node
+    rootDir: server                # 后端代码在 server/ 子目录
+    plan: free                     # 免费版（15分钟无访问休眠，冷启动约30~60秒）
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/health   # 健康检查（免鉴权，返回 storage 字段可看是否连上 Turso）
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TURSO_DATABASE_URL    # 例：libsql://teacher-assistant-你的组织.turso.io
+        sync: false                # 不写进代码库，由 Render 控制台手动填写
+      - key: TURSO_AUTH_TOKEN      # Turso 数据库令牌（eyJhbGciOi... 一串长字符）
+        sync: false

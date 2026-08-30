@@ -1,0 +1,17 @@
+{
+  "name": "math-teacher-assistant-server",
+  "version": "1.0.0",
+  "description": "小学数学教师教学助手 - 后端服务（积分管理 + 消息推送）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "@tursodatabase/serverless": "^1.4.0",
+    "express": "^4.21.2",
+    "multer": "^2.3.0",
+    "ws": "^8.18.0",
+    "xlsx": "^0.18.5"
+  }
+}
